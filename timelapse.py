@@ -33,7 +33,7 @@ class Timelapse:
 
         ff = ffmpy.FFmpeg(
              inputs={'%s/frame%%01d.png' % framePath: '-f image2 -r 30/1'},
-             outputs={'%s/video.mp4' % outputPath: '-y -vcodec mpeg4'}
+             outputs={'%s/video.mp4' % outputPath: '-y -vcodec libx264 -crf 18 -preset veryslow'}
         )
         ff.run()
 
