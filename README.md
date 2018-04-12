@@ -36,16 +36,31 @@ raspistill -v -o test.jpg
 
 It should save an image with the filename test.jpg in the raspberry pi's home folder.
 
-#### Install packages
+#### Install python packages
 ```
 sudo apt-get update
 sudo apt-get install python3
-sudo apt-get install python3-picamera
+sudo apt-get install python3-pip
 ```
 
-#### Clone repository
+#### Install ffmpeg
+
 ```
-git clone https://github.com/Kanabanarama/sPidercam
+cd /usr/src
+sudo mkdir ffmpeg
+sudo chown pi:users ffmpeg
+git clone git://source.ffmpeg.org/ffmpeg.git ffmpeg
+cd ffmpeg
+./configure
+make && sudo make install
+```
+
+(Takes pretty long)
+
+#### Install picamera and python wrapper for ffmpeg
+```
+pip3 install picamera
+pip3 install ffmpy
 ```
 
 ### USAGE
