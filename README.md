@@ -66,5 +66,5 @@ pip3 install ffmpy
 ### USAGE
 
 ```
-python3 capture.py
+python3 timelapse.py
 ```
