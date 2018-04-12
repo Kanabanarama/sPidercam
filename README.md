@@ -2,6 +2,8 @@
 
 Raspberry Pi camera playground
 
+![Raspberry Pi with PiCamera and Lens](gfx/picamera01.png)
+
 ### HARDWARE:
 
 - Raspberry Pi (A+ or similar)
