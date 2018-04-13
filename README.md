@@ -2,6 +2,10 @@
 
 Raspberry Pi camera playground
 
+Features:
+- daily timelapse video
+- web livestream
+
 ![Raspberry Pi with PiCamera and Lens](gfx/picamera01.png)
 
 ### HARDWARE:
