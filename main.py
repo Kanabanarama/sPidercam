@@ -1,12 +1,12 @@
-import os
 import io
 import picamera
 import logging
 import socketserver
 from threading import Condition, Thread
 from http import server
+import time
 from datetime import datetime
-from time import sleep
+from timelapse import Timelapse
 
 class StreamingOutput(object):
     def __init__(self):
@@ -87,6 +87,7 @@ if __name__ == '__main__':
         output = StreamingOutput()
         camera.start_recording(output, format='mjpeg')
 
+        timelapse = Timelapse()
         # capture frames for the rest of the day
         intervalBetweenShots = 1
         now = datetime.now()
@@ -94,35 +95,13 @@ if __name__ == '__main__':
         remainingSeconds = (midnight - now).seconds
         remainingShots = round(remainingSeconds / intervalBetweenShots)
         imagesPath = "timelapse/frames/%s" % now.strftime("%Y-%m-%d")
-
-        if(os.path.isdir(imagesPath)):
-            for i in os.listdir(imagesPath):
-                os.remove(os.path.join(imagesPath, i))
-            os.rmdir(imagesPath)
-            print("removed existing directory [%s]" % imagesPath)
-
-        os.makedirs(imagesPath)
-
-        # TODO: investigate why capturing images stalls the timelapse thread
-        #timelapse = Timelapse()
-        #timelapse_thread = Thread(target=timelapse.capture, args=(camera,
-        #    remainingShots, intervalBetweenShots, imagesPath))
+        timelapse_thread = Thread(target=timelapse.capture, args=(camera,
+            remainingShots, intervalBetweenShots, imagesPath))
 
         try:
             server_thread.start()
-            #timelapse_thread.start()
-            #server_thread.join()
-            #timelapse_thread.join()
-            print("capturing %i images in intervals of %i seconds"
-                % (remainingShots, intervalBetweenShots)
-            )
-            for i in range(remainingShots):
-                sleep(1)
-                frameNum = i + 1
-                frameFile = "frame%i.jpg" % frameNum
-                print("> capture %s (remaining: %i)" % (frameFile, remainingShots - frameNum))
-                camera.capture('%s/%s' % (imagesPath, frameFile), use_video_port=True)
+            timelapse_thread.start()
+            server_thread.join()
+            timelapse_thread.join()
         finally :
-            #camera.stop_recording(splitter_port=2)
-            #camera.stop_recording(splitter_port=1)
-            camera.stop_recording()
+            camera.stop_recording(splitter_port=1)
