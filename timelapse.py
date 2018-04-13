@@ -19,7 +19,8 @@ class Timelapse:
         for i in range(shots):
             frameNum = i + 1
             frameFile = "frame%i.jpg" % frameNum
-            device.capture('%s/%s' % (outputPath, frameFile))
+            # using the still port would cause dropped frames due to camera mode change
+            device.capture('%s/%s' % (outputPath, frameFile), use_video_port=True)
             print("> captured %s (remaining: %i)" % (frameFile, shots - frameNum))
             sleep(interval)
 
