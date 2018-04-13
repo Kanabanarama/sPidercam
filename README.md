@@ -6,7 +6,7 @@ Features:
 - daily timelapse video
 - web livestream
 
-![Raspberry Pi with PiCamera and Lens](gfx/picamera01.png)
+![Raspberry Pi with PiCamera and Lens](static/gfx/picamera01.png)
 
 ### HARDWARE:
 
@@ -63,14 +63,20 @@ make && sudo make install
 
 (Takes pretty long)
 
-#### Install picamera and python wrapper for ffmpeg
+#### Install picamera, python wrapper for ffmpeg and flask
 ```
 pip3 install picamera
 pip3 install ffmpy
+pip3 install flask
 ```
 
 ### USAGE
 
 ```
+// serve webstream and capture timelapse images:
 python3 timelapse.py
+
+// dashboard (work in progress):
+export FLASK_APP=serve.py
+python3 -m flask run --host=0.0.0.0
 ```
