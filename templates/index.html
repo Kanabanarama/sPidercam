@@ -37,7 +37,7 @@
             <div class="row">
                 <div class="column">
                     <h5>Livestream</h5>
-                    <img class="u-max-full-width" src="http://placehold.it/800x450" width="800" height="auto" />
+                    <img class="u-max-full-width" src="/livestream" width="800" height="auto" />
                 </div>
             </div>
         </div>
@@ -51,93 +51,31 @@
                 </div>
             </div>
             <div class="row">
+                {% for video in videos %}
                 <div class="one column">
                     <div class="row">
                         <div class="column">
-                            <span>MON</span>
+                            <span>{{ video|to_day_name }}</span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="column">
-                            <img class="u-max-full-width" src="http://placehold.it/45x45">
-                        </div>
-                    </div>
-                </div>
-                <div class="one column">
-                    <div class="row">
-                        <div class="column">
-                            <span>TUE</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="column">
-                            <img class="u-max-full-width" src="http://placehold.it/45x45">
-                        </div>
-                    </div>
-                </div>
-                <div class="one column">
-                    <div class="row">
-                        <div class="column">
-                            <span>WED</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="column">
-                            <img class="u-max-full-width" src="http://placehold.it/45x45">
-                        </div>
-                    </div>
-                </div>
-                <div class="one column">
-                    <div class="row">
-                        <div class="column">
-                            <span>THU</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="column">
-                            <img class="u-max-full-width" src="http://placehold.it/45x45">
-                        </div>
-                    </div>
-                </div>
-                <div class="one column">
-                    <div class="row">
-                        <div class="column">
-                            <span>FRI</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="column">
-                            <img class="u-max-full-width" src="http://placehold.it/45x45">
-                        </div>
-                    </div>
-                </div>
-                <div class="one column">
-                    <div class="row">
-                        <div class="column">
-                            <span>SAT</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="column">
-                            <img class="u-max-full-width" src="http://placehold.it/45x45">
-                        </div>
-                    </div>
-                </div>
-                <div class="one column">
-                    <div class="row">
-                        <div class="column">
-                            <span>SUN</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="column">
-                            <img class="u-max-full-width" src="http://placehold.it/45x45">
+                            <a href="timelapse/videos/{{ video }}/video.mp4"><img class="u-max-full-width" src="timelapse/videos/{{ video }}/thumbnail.jpg"></a>
                         </div>
                     </div>
                 </div>
                 <div class="five columns">
-                    <a class="button secondary" style="margin-top: 7.5%" href="">&gt; more</a>
+                    <a class="button secondary" style="margin-top: 7.5%" href="">&gt; more-</a>
                 </div>
+                {% else %}
+                <div class="column">
+                    <div class="row">
+                        <div class="column">
+                            <span>Timelapse videos will show up here</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>

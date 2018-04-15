@@ -1,22 +1,28 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, send_from_directory, jsonify, Response
+import os
+import io
+import time
+import datetime
+import picamera
 
 app = Flask(__name__)
 
-# Test data
-videos = [
-    '2018-04-07',
-    '2018-04-08',
-    '2018-04-09',
-    '2018-04-10',
-    '2018-04-11',
-    '2018-04-12',
-    '2018-04-13'
-]
-
 livestream = ['stream.mjpg']
+
+@app.template_filter('to_day_name')
+def to_day_name_filter(s):
+    weekday = datetime.datetime.strptime(s, '%Y-%m-%d').strftime('%a')
+    return weekday
+
+@app.route('/timelapse/videos/<path:path>')
+def send_thumbnail(path):
+    return send_from_directory('timelapse/videos', path)
 
 @app.route('/')
 def index():
+    #videos = [folder + '/video.mp4' for folder in os.listdir('timelapse/videos')]
+    videos = os.listdir('timelapse/videos')
+    #print(videos[:])
     return render_template('index.html', livestream = livestream, videos = videos)
 
 @app.route('/json')
