@@ -51,19 +51,20 @@
                 </div>
             </div>
             <div class="row">
-                {% for video in videos %}
+                {% if video_dirs|length %} {% for folder in video_dirs %}
                 <div class="one column">
                     <div class="row">
                         <div class="column">
-                            <span>{{ video|to_day_name }}</span>
+                            <span>{{ folder|to_day_name }}</span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="column">
-                            <a href="timelapse/videos/{{ video }}/video.mp4"><img class="u-max-full-width" src="timelapse/videos/{{ video }}/thumbnail.jpg"></a>
+                            <a href="timelapse/videos/{{ folder }}/video.mp4"><img class="u-max-full-width" src="timelapse/videos/{{ folder }}/thumbnail.jpg"></a>
                         </div>
                     </div>
                 </div>
+                {% endfor %}
                 <div class="five columns">
                     <a class="button secondary" style="margin-top: 7.5%" href="">&gt; more-</a>
                 </div>
@@ -75,7 +76,7 @@
                         </div>
                     </div>
                 </div>
-                {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>
