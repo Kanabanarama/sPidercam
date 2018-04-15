@@ -9,6 +9,11 @@ app = Flask(__name__)
 
 livestream = ['stream.mjpg']
 
+def getVideos():
+    #videos = [folder + '/video.mp4' for folder in os.listdir('timelapse/videos')]
+    #print(videos[:])
+    return os.listdir('timelapse/videos')
+
 @app.template_filter('to_day_name')
 def to_day_name_filter(s):
     weekday = datetime.datetime.strptime(s, '%Y-%m-%d').strftime('%a')
@@ -20,10 +25,7 @@ def send_thumbnail(path):
 
 @app.route('/')
 def index():
-    #videos = [folder + '/video.mp4' for folder in os.listdir('timelapse/videos')]
-    videos = os.listdir('timelapse/videos')
-    #print(videos[:])
-    return render_template('index.html', livestream = livestream, videos = videos)
+    return render_template('index.html', livestream = livestream, videos = getVideos())
 
 @app.route('/json')
 def json_index():
@@ -35,7 +37,7 @@ def json_livestream():
 
 @app.route('/json/timelapse')
 def json_timelapse():
-    return jsonify(videos)
+    return jsonify(getVideos())
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
