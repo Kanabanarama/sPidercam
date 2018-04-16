@@ -4,13 +4,33 @@ Serve html files and media for web frontend and json for mobile app
 
 import os
 import datetime
-from flask import Flask, render_template, send_from_directory, jsonify
+from flask import Flask, render_template, send_from_directory, jsonify, Response
+
+import io
+import time
+import picamera
 
 APP = Flask(__name__)
 
 def get_livestream_filename():
     "Returns the stream filename"
     return ['stream.mjpg']
+
+def frameGenerator():
+    """Camera stream generator function"""
+    with picamera.PiCamera() as camera:
+        camera.resolution = (640, 360)
+        camera.framerate = 30
+        time.sleep(1)
+        stream = io.BytesIO()
+        for ioBytes in camera.capture_continuous(stream, 'jpeg',
+                                                 use_video_port=True):
+            stream.seek(0)
+            frame = stream.read()
+            yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+            stream.seek(0)
+            stream.truncate()
 
 def get_video_dirs():
     "Returns the folders containing timelapse videos (and their thumbnails)"
@@ -35,6 +55,10 @@ def index():
     return render_template('index.html',
                            livestream_filename=get_livestream_filename(),
                            video_dirs=get_video_dirs())
+
+@APP.route('/livestream')
+def livestream():
+    return Response(frameGenerator(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @APP.route('/json')
 def json_index():
