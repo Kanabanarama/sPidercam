@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='gfx/favicon.ico') }}">
     <title>sPidercam</title>
     <meta name="description" content="sPidercam dashboard">
     <meta name="author" content="René Lantzsch">
@@ -27,17 +28,6 @@
             <div class="row">
                 <div class="column">
                     <p class="section-description">Configure your sPidercam and view the camera livestream and recorded videos.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="section livestream" style="margin-top:3rem">
-        <div class="container">
-            <div class="row">
-                <div class="column">
-                    <h5>Livestream</h5>
-                    <img class="u-max-full-width" src="/livestream" width="1024" height="auto" />
                 </div>
             </div>
         </div>
@@ -77,6 +67,17 @@
                     </div>
                 </div>
                 {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="section livestream" style="margin-top:3rem">
+        <div class="container">
+            <div class="row">
+                <div class="column">
+                    <h5>Livestream</h5>
+                    <img class="u-max-full-width" src="/livestream" width="1024" height="auto" />
+                </div>
             </div>
         </div>
     </div>
