@@ -99,15 +99,9 @@ def merge_worker():
 
 def capture_timelapse():
     """Capture frames for the rest of the day"""
-    intervalBetweenShots = 1
-    now = datetime.datetime.now()
-    midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    remainingSeconds = (midnight - now).seconds
-    remainingShots = round(remainingSeconds / intervalBetweenShots)
-    dirName = now.strftime("%Y-%m-%d")
     camera = init_camera()['picamera']
     while True:
-        timelapse.Timelapse().capture(camera, remainingShots, intervalBetweenShots, dirName)
+        timelapse.Timelapse().capture(camera, 5)
 
 if __name__ == '__main__':
     p1 = threading.Thread(target=capture_timelapse)

@@ -1,6 +1,7 @@
 import os
 import re
 import ffmpy
+import datetime
 import collections
 from time import sleep, time
 
@@ -23,23 +24,29 @@ class Timelapse:
             max_framenum = max(current_framenum, max_framenum)
         return max_framenum + 1
 
-    def capture(self, device, shots, interval, dirName):
+    def capture(self, device, interval):
+        now = datetime.datetime.now()
+        midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        remainingSeconds = (midnight - now).seconds
+        remainingShots = round(remainingSeconds / interval)
+        dirName = now.strftime("%Y-%m-%d")
+
         outputPath = self.frame_path + '/' + dirName
         os.makedirs(outputPath, exist_ok=True)
 
         print("--- Capturing %i images in intervals of %i seconds ---"
-            % (shots, interval)
+            % (remainingShots, interval)
         )
 
         latestFrameNum = self.get_highest_frame_number(outputPath)
         print("--- Beginning from file with number %i ---" % latestFrameNum)
 
-        for i in range(shots):
+        for i in range(remainingShots):
             frameNum = latestFrameNum + i
             frameFile = "frame%i.jpg" % frameNum
             # using the still port would cause dropped frames due to camera mode change
             device.capture('%s/%s' % (outputPath, frameFile), use_video_port=True, splitter_port=1)
-            print("> captured %s (remaining: %i)" % (frameFile, shots - i + 1))
+            print("> captured %s (remaining: %i)" % (frameFile, remainingShots - i + 1))
             sleep(interval)
 
         print('--- Finished frame capturing for [%s], put into queue for merging' % outputPath)
