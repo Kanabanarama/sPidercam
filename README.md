@@ -8,6 +8,8 @@ Features:
 
 ![Raspberry Pi with PiCamera and Lens](static/gfx/picamera01.png)
 
+![Well it's got eight arms](static/gfx/dashboard01.png)
+
 ### HARDWARE:
 
 - Raspberry Pi (A+ or similar)
