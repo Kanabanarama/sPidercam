@@ -8,15 +8,16 @@ import io
 import time
 import datetime
 import picamera
-import timelapse
 from flask import Flask, render_template, send_from_directory, jsonify, Response
+import timelapse
 
 APP = Flask(__name__)
 CAMERA = {}
 
 def init_camera():
+    """Retrieve picamera object"""
     #if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    if(not len(CAMERA)):
+    if not CAMERA:
         camera_pi = picamera.PiCamera()
         camera_pi.resolution = (1024, 576)
         camera_pi.framerate = 30
@@ -89,13 +90,12 @@ def json_timelapse():
 
 def merge_worker():
     """Interval check frames ready to video merging"""
-    if(os.path.isdir('timelapse/frames')):
+    if os.path.isdir('timelapse/frames'):
         timelapse.Timelapse.rebuild_merge_queue()
         while True:
-            print('--- Watching queue for finished frame captures to merge ---')
-            mergedVideo = timelapse.Timelapse.merge()
-            if(mergedVideo):
-                timelapse.Timelapse.create_thumbnail(mergedVideo)
+            merged_video = timelapse.Timelapse.merge()
+            if merged_video:
+                timelapse.Timelapse.create_thumbnail(merged_video)
             time.sleep(3600)
 
 def capture_timelapse():
@@ -105,10 +105,10 @@ def capture_timelapse():
         timelapse.Timelapse().capture(camera, 5)
 
 if __name__ == '__main__':
-    p1 = threading.Thread(target=capture_timelapse)
-    p1.start()
-    #p1.join()
-    p2 = threading.Thread(target=merge_worker)
-    p2.start()
-    #p2.join()
+    TIMELAPSE_THREAD = threading.Thread(target=capture_timelapse)
+    TIMELAPSE_THREAD.start()
+    #TIMELAPSE_THREAD.join()
+    MERGE_THREAD = threading.Thread(target=merge_worker)
+    MERGE_THREAD.start()
+    #MERGE_THREAD.join()
     APP.run(host='0.0.0.0', port=5000, debug=False)
