@@ -90,11 +90,12 @@ def json_timelapse():
 def merge_worker():
     """Interval check frames ready to video merging"""
     if(os.path.isdir('timelapse/frames')):
+        timelapse.Timelapse.rebuild_merge_queue()
         while True:
             print('--- Watching queue for finished frame captures to merge ---')
-            mergedVideo = timelapse.Timelapse().merge()
+            mergedVideo = timelapse.Timelapse.merge()
             if(mergedVideo):
-                timelapse.Timelapse().create_thumbnail(mergedVideo)
+                timelapse.Timelapse.create_thumbnail(mergedVideo)
             time.sleep(3600)
 
 def capture_timelapse():
