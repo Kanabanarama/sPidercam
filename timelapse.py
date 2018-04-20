@@ -41,24 +41,24 @@ class Timelapse:
         midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
         remaining_seconds = (midnight - now).seconds
         remaining_shots = round(remaining_seconds / interval)
-        dir_name = now.strftime("%Y-%m-%d")
+        dir_name = now.strftime('%Y-%m-%d')
         output_path = self.frame_path + '/' + dir_name
         os.makedirs(output_path, exist_ok=True)
 
-        print("--- Capturing %i images in intervals of %i seconds ---"
+        print('--- Capturing %i images in intervals of %i seconds ---'
               % (remaining_shots, interval))
 
         latest_frame_num = self.get_highest_frame_number(output_path)
-        print("--- Beginning from file with number %i ---" % latest_frame_num)
+        print('--- Beginning from file with number %i ---' % latest_frame_num)
 
         for i in range(remaining_shots):
             frame_num = latest_frame_num + i
-            frame_file = "frame%i.jpg" % frame_num
+            frame_file = 'frame%i.jpg' % frame_num
             # using the still port would cause dropped frames due to
             # camera mode change
             device.capture('%s/%s' % (output_path, frame_file),
                            use_video_port=True, splitter_port=1)
-            print("> captured %s (remaining: %i)" % (frame_file, remaining_shots - i + 1))
+            print('> captured %s (remaining: %i)' % (frame_file, remaining_shots - i + 1))
             time.sleep(interval)
 
         print('--- Finished frame capturing for [%s], put into queue for merging' % output_path)
@@ -85,7 +85,6 @@ class Timelapse:
     @classmethod
     def merge(cls):
         """Starts merging the next frames in the queue"""
-        result = None
         if cls.merge_queue:
             next_element = cls.merge_queue.popitem()
             print('--- Merge next queue item: %s ---' % next_element[0])
@@ -97,23 +96,27 @@ class Timelapse:
                 inputs={'%s/frame%%01d.jpg' % frame_path: '-f image2 -r 30/1'},
                 outputs={'%s/video.mp4' % output_path:
                          '-y -vcodec libx264 -pix_fmt yuv420p -crf 18 '
-                         '-preset medium'} #veryslow
+                         '-preset veryslow'}
             )
             ff_command.run()
             # as command:
             #os.system("ffmpeg -f image2 -r 30/1 -i %s/frame%%01d.png
             #-vcodec mpeg4 -y %s/video.mp4" % (framePath, timelapsePath))
-            result = '%s/video.mp4' % output_path
-        return result
+        return output_path if output_path else None
 
     @classmethod
     def create_thumbnail(cls, video_path):
         """Make a thumbnail of a video"""
-        ff_command = ffmpy.FFmpeg(
-            inputs={'%s/video.mp4' % video_path: None},
-            outputs={'%s/thumbnail.jpg' % video_path: '-ss 0:0:00 -vframes 1 -q:v 2'}
-        )
-        ff_command.run()
-        # as command:
-        #os.system("ffmpeg -i video.mp4 -ss 00:00:00 -vframes 1 -q:v 2 screenshot.jpg")
-        return '%s/thumbnail.jpg' % video_path
+        if video_path:
+            print('--- Creating thumbnail for video: %s ---' % video_path)
+            ff_command = ffmpy.FFmpeg(
+                inputs={'%s/video.mp4' % video_path: None},
+                outputs={'%s/thumbnail.jpg' % video_path: '-ss 0:0:00 -vframes 1 -q:v 2'}
+            )
+            ff_command.run()
+            # as command:
+            #os.system("ffmpeg -i video.mp4 -ss 00:00:00 -vframes 1
+            #-q:v 2 thumbnail.jpg")
+        else:
+            print('--- No video path given to create tumbnail ---')
+        return '%s/thumbnail.jpg' % video_path if video_path else None

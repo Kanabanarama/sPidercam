@@ -1,6 +1,6 @@
 # sPidercam
 
-Raspberry Pi camera playground
+Raspberry Pi terraria camera
 
 Features:
 - daily timelapse video

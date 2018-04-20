@@ -21,6 +21,7 @@ def init_camera():
         camera_pi = picamera.PiCamera()
         camera_pi.resolution = (1024, 576)
         camera_pi.framerate = 30
+        camera_pi.rotation = 90
         CAMERA['picamera'] = camera_pi
     return CAMERA
 
@@ -94,8 +95,7 @@ def merge_worker():
         timelapse.Timelapse.rebuild_merge_queue()
         while True:
             merged_video = timelapse.Timelapse.merge()
-            if merged_video:
-                timelapse.Timelapse.create_thumbnail(merged_video)
+            timelapse.Timelapse.create_thumbnail(merged_video)
             time.sleep(3600)
 
 def capture_timelapse():
