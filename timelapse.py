@@ -85,6 +85,7 @@ class Timelapse:
     @classmethod
     def merge(cls):
         """Starts merging the next frames in the queue"""
+        output_path = None
         if cls.merge_queue:
             next_element = cls.merge_queue.popitem()
             print('--- Merge next queue item: %s ---' % next_element[0])
@@ -102,7 +103,7 @@ class Timelapse:
             # as command:
             #os.system("ffmpeg -f image2 -r 30/1 -i %s/frame%%01d.png
             #-vcodec mpeg4 -y %s/video.mp4" % (framePath, timelapsePath))
-        return output_path if output_path else None
+        return output_path
 
     @classmethod
     def create_thumbnail(cls, video_path):

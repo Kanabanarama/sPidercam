@@ -8,10 +8,10 @@ import io
 import time
 import datetime
 import picamera
-from flask import Flask, render_template, send_from_directory, jsonify, Response
+import flask
 import timelapse
 
-APP = Flask(__name__)
+APP = flask.Flask(__name__)
 CAMERA = {}
 
 def init_camera():
@@ -57,37 +57,53 @@ def to_day_name_filter(datestring):
     weekday = datetime.datetime.strptime(datestring, '%Y-%m-%d').strftime('%a')
     return weekday
 
-@APP.route('/timelapse/videos/<path:path>')
+@APP.route('/timelapse/videos/<path:path>/thumbnail.jpg')
 def send_thumbnail(path):
-    "Serve video and thumbnail files"
-    return send_from_directory('timelapse/videos', path)
+    "Serve thumbnail files"
+    return flask.send_from_directory('timelapse/videos/%s' %path, 'thumbnail.jpg')
+
+@APP.route('/timelapse/videos/<path:path>/video.mp4')
+def stream_video(path):
+    "Stream mp4 timelapse videos"
+    fp_as_string = 'timelapse/videos/%s/video.mp4' % path
+    video = open(fp_as_string, 'rb')
+    def read_chunks(file_object, chunk_size=1024):
+        "Read a file in chunks"
+        while True:
+            data = file_object.read(chunk_size)
+            if not data:
+                break
+            yield data
+    return flask.Response(
+        flask.stream_with_context(read_chunks(video)),
+        mimetype='video/mp4')
 
 @APP.route('/')
 def index():
     "Render index template"
-    return render_template('index.html',
-                           livestream_filename=get_livestream_filename(),
-                           video_dirs=get_video_dirs())
+    return flask.render_template('index.html',
+                                 livestream_filename=get_livestream_filename(),
+                                 video_dirs=get_video_dirs())
 
 @APP.route('/livestream')
 def livestream():
     "Send the camera livestream"
-    return Response(frame_generator(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return flask.Response(frame_generator(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @APP.route('/json')
 def json_index():
     "Return json index"
-    return jsonify('hello spider!')
+    return flask.jsonify('hello spider!')
 
 @APP.route('/json/livestream')
 def json_livestream():
     "Return livestream filename as json"
-    return jsonify(get_livestream_filename())
+    return flask.jsonify(get_livestream_filename())
 
 @APP.route('/json/timelapse')
 def json_timelapse():
     "Return timelapse video folders as json"
-    return jsonify(get_video_dirs())
+    return flask.jsonify(get_video_dirs())
 
 def merge_worker():
     """Interval check frames ready to video merging"""
@@ -95,7 +111,8 @@ def merge_worker():
         timelapse.Timelapse.rebuild_merge_queue()
         while True:
             merged_video = timelapse.Timelapse.merge()
-            timelapse.Timelapse.create_thumbnail(merged_video)
+            if merged_video:
+                timelapse.Timelapse.create_thumbnail(merged_video)
             time.sleep(3600)
 
 def capture_timelapse():
@@ -105,8 +122,8 @@ def capture_timelapse():
         timelapse.Timelapse().capture(camera, 5)
 
 if __name__ == '__main__':
-    TIMELAPSE_THREAD = threading.Thread(target=capture_timelapse)
-    TIMELAPSE_THREAD.start()
+    #TIMELAPSE_THREAD = threading.Thread(target=capture_timelapse)
+    #TIMELAPSE_THREAD.start()
     #TIMELAPSE_THREAD.join()
     MERGE_THREAD = threading.Thread(target=merge_worker)
     MERGE_THREAD.start()
